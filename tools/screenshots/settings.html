@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1190px; height: 700px; }
+  body {
+    background: linear-gradient(135deg, #3b4252 0%, #2e3440 60%, #232831 100%);
+    font-family: -apple-system, "Helvetica Neue", sans-serif;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sheet {
+    width: 940px; border-radius: 14px; overflow: hidden;
+    background: #262a33;
+    box-shadow: 0 26px 70px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.08);
+  }
+  .header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px 26px; border-bottom: 1px solid rgba(255,255,255,.07);
+  }
+  .header .logo { width: 46px; height: 46px; border-radius: 11px; }
+  .header h1 { font-size: 19px; color: #eef1f5; font-weight: 600; }
+  .header p { font-size: 12.5px; color: #97a0ac; margin-top: 2px; }
+  .grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 13px 34px;
+    padding: 22px 30px 26px;
+  }
+  .field label { display: block; font-size: 12.5px; color: #9aa3af; margin-bottom: 5px; }
+  .control {
+    background: #1c1f27; border: 1px solid rgba(255,255,255,.1);
+    border-radius: 7px; padding: 8px 12px; font-size: 14px; color: #e8ecf1;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .control.ph { color: #6b7482; }
+  .control .chev { color: #6b7482; font-size: 11px; }
+  .checkline { display: flex; gap: 10px; align-items: flex-start; }
+  .checkbox {
+    width: 16px; height: 16px; border-radius: 4px; margin-top: 1px; flex: none;
+    background: #2f66d0; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 12px; font-weight: 700;
+  }
+  .checkbox.off { background: #1c1f27; border: 1px solid rgba(255,255,255,.18); }
+  .checkline span { font-size: 13.5px; color: #d7dce3; }
+  .checkline small { display: block; font-size: 11.5px; color: #87919d; margin-top: 2px; line-height: 1.35; }
+  .span2 { grid-column: 1 / 3; }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <div class="header">
+      <img class="logo" src="../../workflow/icon.png">
+      <div>
+        <h1>The Noun Project — Configure Workflow</h1>
+        <p>Browser backend uses your own thenounproject.com session (sign in via the “nounctl” keyword)</p>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="field">
+        <label>Download folder</label>
+        <div class="control"><span>~/Downloads</span><span class="chev">▲▼</span></div>
+      </div>
+      <div class="field">
+        <label>Default format</label>
+        <div class="control"><span>SVG</span><span class="chev">▲▼</span></div>
+      </div>
+      <div class="field">
+        <label>PNG size</label>
+        <div class="control"><span>512 px</span><span class="chev">▲▼</span></div>
+      </div>
+      <div class="field">
+        <label>Colour (hex)</label>
+        <div class="control ph"><span>000000</span></div>
+      </div>
+      <div class="field">
+        <label>Results per search</label>
+        <div class="control"><span>12</span><span class="chev">▲▼</span></div>
+      </div>
+      <div class="field">
+        <label>Backend</label>
+        <div class="control"><span>Browser (Noun Project account)</span><span class="chev">▲▼</span></div>
+      </div>
+      <div class="field span2" style="display:flex; gap:34px; margin-top:2px">
+        <div class="checkline" style="flex:1">
+          <div class="checkbox">✓</div>
+          <span>Reveal the file in Finder after download</span>
+        </div>
+        <div class="checkline" style="flex:1">
+          <div class="checkbox">✓</div>
+          <span>Public domain only
+            <small>Limits the search to public-domain icons (tagged 🟢). Uncheck to see the whole catalogue, public domain first.</small>
+          </span>
+        </div>
+      </div>
+      <div class="field span2">
+        <div class="checkline">
+          <div class="checkbox">✓</div>
+          <span>Remove the embedded “Created by…” notice
+            <small>Free files: PNG cropped, “Created by…” stripped from the SVG code. ⚠️ CC BY still requires crediting the author — ⇧⌃⏎ copies the notice. No effect on subscriber-account files.</small>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

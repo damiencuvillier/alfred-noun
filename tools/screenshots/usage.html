@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1600px; height: 912px; }
+  body {
+    background: linear-gradient(135deg, #3b4252 0%, #2e3440 55%, #232831 100%);
+    font-family: -apple-system, "Helvetica Neue", sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    padding-top: 84px;
+  }
+  .alfred {
+    width: 980px; border-radius: 14px; overflow: hidden;
+    background: rgba(28, 30, 38, 0.96);
+    box-shadow: 0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.08);
+    backdrop-filter: blur(20px);
+  }
+  .searchbar {
+    display: flex; align-items: center; gap: 18px;
+    padding: 20px 26px 16px;
+  }
+  .searchbar .q { font-size: 42px; font-weight: 300; color: #ecf0f4; }
+  .searchbar .q .kw { color: #8f97a3; }
+  .searchbar .caret { width: 3px; height: 44px; background: #61a5fa; border-radius: 2px; }
+  .searchbar .logo {
+    margin-left: auto; width: 52px; height: 52px; border-radius: 12px;
+  }
+  .rows { padding-bottom: 10px; }
+  .row {
+    display: flex; align-items: center; gap: 18px;
+    padding: 11px 22px; margin: 0 8px; border-radius: 10px;
+  }
+  .row.sel { background: #2f66d0; }
+  .thumb {
+    width: 56px; height: 56px; border-radius: 9px; background: #fff;
+    display: flex; align-items: center; justify-content: center; flex: none;
+  }
+  .thumb img { width: 46px; height: 46px; }
+  .lines { min-width: 0; }
+  .title { font-size: 21px; color: #f2f5f8; font-weight: 500; }
+  .sub { font-size: 13.5px; color: #9aa3af; margin-top: 3px; }
+  .row.sel .sub { color: #cfdcf5; }
+  .shortcut {
+    margin-left: auto; color: #78808c; font-size: 15px; flex: none;
+    font-family: -apple-system;
+  }
+  .row.sel .shortcut { color: #b9cdf2; }
+  .hintcard {
+    margin-top: 46px; width: 980px; border-radius: 16px;
+    background: rgba(20, 22, 28, 0.92);
+    box-shadow: 0 18px 50px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.07);
+    padding: 30px 38px; display: flex; align-items: center; gap: 34px;
+  }
+  .key {
+    background: #f4f5f7; color: #1c1e26; border-radius: 12px;
+    font-size: 30px; font-weight: 600; padding: 14px 22px;
+    box-shadow: 0 3px 0 rgba(0,0,0,.35);
+    font-family: -apple-system;
+  }
+  .hintlines { font-family: "SF Mono", Menlo, monospace; }
+  .hintlines .h1 { color: #8f97a3; font-size: 19px; }
+  .hintlines .h2 { color: #ecf0f4; font-size: 23px; margin-top: 6px; }
+  .plus { color: #566072; font-size: 26px; }
+</style>
+</head>
+<body>
+  <div class="alfred">
+    <div class="searchbar">
+      <span class="q"><span class="kw">noun</span> maison</span>
+      <span class="caret"></span>
+      <img class="logo" src="../../workflow/icon.png">
+    </div>
+    <div class="rows">
+      <div class="row sel">
+        <div class="thumb"><img src="https://static.thenounproject.com/png/2421971-200.png"></div>
+        <div class="lines">
+          <div class="title">🟢 house</div>
+          <div class="sub">by gzz · public domain — ⏎ downloads the SVG</div>
+        </div>
+        <div class="shortcut">⌘1</div>
+      </div>
+      <div class="row">
+        <div class="thumb"><img src="https://static.thenounproject.com/png/4436126-200.png"></div>
+        <div class="lines">
+          <div class="title">maison</div>
+          <div class="sub">by Anastasia Malevannaya · CC BY — ⏎ downloads the SVG</div>
+        </div>
+        <div class="shortcut">⌘2</div>
+      </div>
+      <div class="row">
+        <div class="thumb"><img src="https://static.thenounproject.com/png/2145675-200.png"></div>
+        <div class="lines">
+          <div class="title">maison carrée</div>
+          <div class="sub">by Vectors Market · CC BY — ⏎ downloads the SVG</div>
+        </div>
+        <div class="shortcut">⌘2</div>
+      </div>
+      <div class="row">
+        <div class="thumb"><img src="https://static.thenounproject.com/png/2421971-200.png"></div>
+        <div class="lines">
+          <div class="title">houses</div>
+          <div class="sub">by gzz · CC BY — ⏎ downloads the SVG</div>
+        </div>
+        <div class="shortcut">⌘3</div>
+      </div>
+      <div class="row">
+        <div class="thumb"><img src="https://static.thenounproject.com/png/4722959-200.png"></div>
+        <div class="lines">
+          <div class="title">la maison carrée temple</div>
+          <div class="sub">by Brickclay · CC BY — ⏎ downloads the SVG</div>
+        </div>
+        <div class="shortcut">⌘4</div>
+      </div>
+      <div class="row">
+        <div class="thumb"><img src="https://static.thenounproject.com/png/949997-200.png"></div>
+        <div class="lines">
+          <div class="title">Real Estate</div>
+          <div class="sub">by Symbolon · CC BY — ⏎ downloads the SVG</div>
+        </div>
+        <div class="shortcut">⌘5</div>
+      </div>
+    </div>
+  </div>
+  <div class="hintcard">
+    <span class="key">⏎</span>
+    <div class="hintlines">
+      <div class="h1">→ default format · ⌥ alternate · ⇧ clipboard · ⌃ attribution</div>
+      <div class="h2">maison.svg&nbsp;&nbsp;saved to ~/Downloads</div>
+    </div>
+    <span class="plus" style="margin-left:auto"></span>
+    <span class="key">⌘⌥⇧⌃</span>
+    <div class="hintlines">
+      <div class="h1">→ combos: both formats,<br>attribution (.txt), clipboard</div>
+    </div>
+  </div>
+</body>
+</html>
