@@ -68,7 +68,7 @@ Node/[Playwright](https://playwright.dev) のデーモン（[`workflow/server.mj
 ## 🛠 開発
 
 ```bash
-(cd workflow && zip -r "../dist/The-Noun-Project.alfredworkflow" . -x '.*' -x '__pycache__/*')  # ワークフローをパッケージ化
+./build                           # ワークフローをパッケージ化
 osascript -l JavaScript tools/make-icon.js "$PWD/workflow/icon.png"  # workflow/icon.png を再生成
 node tools/make-screenshots.mjs   # スクリーンショットを再生成
 tools/make-readmes.py             # README をすべて再生成
@@ -78,6 +78,8 @@ tools/make-buttons.py             # ダウンロードボタンを再生成
 - `workflow/` — ソース一式：`info.plist`、Python スクリプト（標準ライブラリのみ）、デーモン `server.mjs`、`i18n.py`（9 言語）
 - デーモンは 127.0.0.1 上に小さなローカル HTTP API（`/search`、`/download`、`/login`、`/status`、`/quit`）を公開します
 - `dist/` — インストール可能なパッケージ
+
+[![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)](https://www.python.org) [![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev) [![Claude](https://img.shields.io/badge/Claude-D97757?logo=claude&logoColor=white)](https://claude.com)
 
 ## 📚 参考リンク
 
@@ -92,3 +94,5 @@ MIT。アイコン自体には引き続き The Noun Project のライセンス�
 ---
 
 作者：<a href='https://damiencuvillier.com' target='_blank' rel='noopener'>Damien</a> · Issue や PR を歓迎します
+
+*このワークフローのコードは LLM（Claude Code）の支援を受けて生成されましたが、設計とテストは人間が行っています ;-)*

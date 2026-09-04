@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Package dist/The-Noun-Project.alfredworkflow from workflow/.
+# Usage: ./build
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")"
+mkdir -p dist
+rm -f dist/The-Noun-Project.alfredworkflow
+(cd workflow && zip -r "../dist/The-Noun-Project.alfredworkflow" . -x '.*' -x '__pycache__/*')

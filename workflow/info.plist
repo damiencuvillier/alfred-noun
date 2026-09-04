@@ -1101,7 +1101,11 @@ Recherche d'icônes sur thenounproject.com, avec téléchargement en SVG ou PNG.
 - Node.js (mode Navigateur) : `brew install node`.
 - Notifications : autorise Alfred dans Réglages &gt; Notifications pour voir les confirmations de téléchargement.
 - Premier téléchargement : macOS peut demander l'accès d'Alfred au dossier de destination (Réglages &gt; Confidentialité et sécurité).
-- Mode API : la clé et le secret sont stockés en clair dans les préférences Alfred (pas de champ sécurisé dans Alfred) ; les clés sont révocables sur thenounproject.com/developers/apps/.</string>
+- Mode API : la clé et le secret sont stockés en clair dans les préférences Alfred (pas de champ sécurisé dans Alfred) ; les clés sont révocables sur thenounproject.com/developers/apps/.
+
+## À propos
+
+Le code de ce workflow a été généré avec l'aide d'un LLM (Claude Code) — conçu et testé par un humain ;-)</string>
 	<key>uidata</key>
 	<dict>
 		<key>6E1D9A44-52A6-4F86-A6B7-1C50F0F1A001</key>

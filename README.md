@@ -68,7 +68,7 @@ No credentials ever pass through the workflow: you sign in by hand in the Chrome
 ## 🛠 Development
 
 ```bash
-(cd workflow && zip -r "../dist/The-Noun-Project.alfredworkflow" . -x '.*' -x '__pycache__/*')  # package the workflow
+./build                           # package the workflow
 osascript -l JavaScript tools/make-icon.js "$PWD/workflow/icon.png"  # regenerate workflow/icon.png
 node tools/make-screenshots.mjs   # regenerate the screenshots
 tools/make-readmes.py             # regenerate all README files
@@ -78,6 +78,8 @@ tools/make-buttons.py             # regenerate the download buttons
 - `workflow/` — sources: `info.plist`, Python scripts (stdlib only), the `server.mjs` daemon, `i18n.py` (9 languages)
 - The daemon exposes a small local HTTP API (`/search`, `/download`, `/login`, `/status`, `/quit`) on 127.0.0.1
 - `dist/` — the installable bundle
+
+[![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)](https://www.python.org) [![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev) [![Claude](https://img.shields.io/badge/Claude-D97757?logo=claude&logoColor=white)](https://claude.com)
 
 ## 📚 References
 
@@ -92,3 +94,5 @@ MIT. The icons themselves remain governed by The Noun Project licenses (CC BY or
 ---
 
 Made by <a href='https://damiencuvillier.com' target='_blank' rel='noopener'>Damien</a> · Issues and PRs welcome
+
+*This workflow's code was generated with the help of an LLM (Claude Code) — designed and tested by a human ;-)*

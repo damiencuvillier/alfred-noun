@@ -68,7 +68,7 @@
 ## 🛠 开发
 
 ```bash
-(cd workflow && zip -r "../dist/The-Noun-Project.alfredworkflow" . -x '.*' -x '__pycache__/*')  # 打包工作流
+./build                           # 打包工作流
 osascript -l JavaScript tools/make-icon.js "$PWD/workflow/icon.png"  # 重新生成 workflow/icon.png
 node tools/make-screenshots.mjs   # 重新生成截图
 tools/make-readmes.py             # 重新生成所有 README
@@ -78,6 +78,8 @@ tools/make-buttons.py             # 重新生成下载按钮
 - `workflow/` —— 源码：`info.plist`、Python 脚本（仅标准库）、守护进程 `server.mjs`、`i18n.py`（9 种语言）
 - 守护进程在 127.0.0.1 上提供一个小型本地 HTTP API（`/search`、`/download`、`/login`、`/status`、`/quit`）
 - `dist/` —— 可安装的工作流包
+
+[![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)](https://www.python.org) [![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev) [![Claude](https://img.shields.io/badge/Claude-D97757?logo=claude&logoColor=white)](https://claude.com)
 
 ## 📚 参考
 
@@ -92,3 +94,5 @@ MIT。图标本身仍受 The Noun Project 相关许可约束（CC BY 或公共�
 ---
 
 作者：<a href='https://damiencuvillier.com' target='_blank' rel='noopener'>Damien</a> · 欢迎提交 Issue 和 PR
+
+*此工作流的代码由 LLM（Claude Code）辅助生成，由人类设计和测试 ;-)*

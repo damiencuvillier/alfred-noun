@@ -9,6 +9,12 @@ os.makedirs(OUT, exist_ok=True)
 LANGS = [("en","🇬🇧","English"),("fr","🇫🇷","Français"),("de","🇩🇪","Deutsch"),
          ("es","🇪🇸","Español"),("it","🇮🇹","Italiano"),("pt","🇵🇹","Português"),
          ("ja","🇯🇵","日本語"),("zh","🇨🇳","中文"),("el","🇬🇷","Ελληνικά")]
+
+BADGES = (
+    "[![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)](https://www.python.org) "
+    "[![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev) "
+    "[![Claude](https://img.shields.io/badge/Claude-D97757?logo=claude&logoColor=white)](https://claude.com)"
+)
 def fname(code):
     return "README.md" if code == "en" else f"README.{code}.md"
 
@@ -87,7 +93,7 @@ TEMPLATE = """<a href="dist/The-Noun-Project.alfredworkflow?raw=true"><img src="
 ## 🛠 {h_dev}
 
 ```bash
-(cd workflow && zip -r "../dist/The-Noun-Project.alfredworkflow" . -x '.*' -x '__pycache__/*')  # {c_zip}
+./build                           # {c_zip}
 osascript -l JavaScript tools/make-icon.js "$PWD/workflow/icon.png"  # {c_icon}
 node tools/make-screenshots.mjs   # {c_shots}
 tools/make-readmes.py             # {c_readmes}
@@ -97,6 +103,8 @@ tools/make-buttons.py             # {c_buttons}
 - {dev1}
 - {dev2}
 - {dev3}
+
+{badges}
 
 ## 📚 {h_refs}
 
@@ -111,6 +119,8 @@ tools/make-buttons.py             # {c_buttons}
 ---
 
 {footer}
+
+*{ai_notice}*
 """
 
 T = {}
@@ -164,6 +174,7 @@ T["en"] = dict(
  h_license="License",
  license_p="MIT. The icons themselves remain governed by The Noun Project licenses (CC BY or public domain, subscription where applicable).",
  footer="Made by <a href='https://damiencuvillier.com' target='_blank' rel='noopener'>Damien</a> · Issues and PRs welcome",
+ ai_notice="This workflow's code was generated with the help of an LLM (Claude Code) — designed and tested by a human ;-)",
 )
 
 T["fr"] = dict(
@@ -216,6 +227,7 @@ T["fr"] = dict(
  h_license="Licence",
  license_p="MIT. Les icônes restent soumises aux licences The Noun Project (CC BY ou domaine public, abonnement le cas échéant).",
  footer="Réalisé par <a href='https://damiencuvillier.com' target='_blank' rel='noopener'>Damien</a> · Issues et PRs bienvenues",
+ ai_notice="Le code de ce workflow a été généré avec l'aide d'un LLM (Claude Code) — conçu et testé par un humain ;-)",
 )
 T["de"] = dict(
  title="Noun-Project-Icons suchen und herunterladen",
@@ -267,6 +279,7 @@ T["de"] = dict(
  h_license="Lizenz",
  license_p="MIT. Die Icons selbst unterliegen weiterhin den Lizenzen von The Noun Project (CC BY oder Public Domain, gegebenenfalls Abo).",
  footer="Erstellt von <a href='https://damiencuvillier.com' target='_blank' rel='noopener'>Damien</a> · Issues und PRs willkommen",
+ ai_notice="Der Code dieses Workflows wurde mit Unterstützung eines LLM (Claude Code) generiert — entworfen und getestet von einem Menschen ;-)",
 )
 T["es"] = dict(
  title="Buscar y descargar iconos de Noun Project",
@@ -318,6 +331,7 @@ T["es"] = dict(
  h_license="Licencia",
  license_p="MIT. Los iconos siguen sujetos a las licencias de The Noun Project (CC BY o dominio público, suscripción cuando corresponda).",
  footer="Hecho por <a href='https://damiencuvillier.com' target='_blank' rel='noopener'>Damien</a> · Issues y PRs bienvenidos",
+ ai_notice="El código de este workflow se generó con la ayuda de un LLM (Claude Code) — diseñado y probado por un humano ;-)",
 )
 T["it"] = dict(
  title="Cerca e scarica icone Noun Project",
@@ -369,6 +383,7 @@ T["it"] = dict(
  h_license="Licenza",
  license_p="MIT. Le icone restano soggette alle licenze The Noun Project (CC BY o pubblico dominio, abbonamento ove applicabile).",
  footer="Realizzato da <a href='https://damiencuvillier.com' target='_blank' rel='noopener'>Damien</a> · Issue e PR benvenute",
+ ai_notice="Il codice di questo workflow è stato generato con l'aiuto di un LLM (Claude Code) — progettato e testato da un essere umano ;-)",
 )
 T["pt"] = dict(
  title="Pesquisar e descarregar ícones do Noun Project",
@@ -420,6 +435,7 @@ T["pt"] = dict(
  h_license="Licença",
  license_p="MIT. Os ícones continuam sujeitos às licenças do The Noun Project (CC BY ou domínio público, subscrição quando aplicável).",
  footer="Feito por <a href='https://damiencuvillier.com' target='_blank' rel='noopener'>Damien</a> · Issues e PRs bem-vindos",
+ ai_notice="O código deste workflow foi gerado com a ajuda de um LLM (Claude Code) — concebido e testado por um humano ;-)",
 )
 T["ja"] = dict(
  title="Noun Project のアイコンを検索してダウンロード",
@@ -471,6 +487,7 @@ T["ja"] = dict(
  h_license="ライセンス",
  license_p="MIT。アイコン自体には引き続き The Noun Project のライセンス（CC BY またはパブリックドメイン、該当する場合は有料プラン）が適用されます。",
  footer="作者：<a href='https://damiencuvillier.com' target='_blank' rel='noopener'>Damien</a> · Issue や PR を歓迎します",
+ ai_notice="このワークフローのコードは LLM（Claude Code）の支援を受けて生成されましたが、設計とテストは人間が行っています ;-)",
 )
 T["zh"] = dict(
  title="搜索并下载 Noun Project 图标",
@@ -522,6 +539,7 @@ T["zh"] = dict(
  h_license="许可证",
  license_p="MIT。图标本身仍受 The Noun Project 相关许可约束（CC BY 或公共领域，如有订阅则按订阅许可）。",
  footer="作者：<a href='https://damiencuvillier.com' target='_blank' rel='noopener'>Damien</a> · 欢迎提交 Issue 和 PR",
+ ai_notice="此工作流的代码由 LLM（Claude Code）辅助生成，由人类设计和测试 ;-)",
 )
 T["el"] = dict(
  title="Αναζήτηση και λήψη εικονιδίων του Noun Project",
@@ -573,10 +591,11 @@ T["el"] = dict(
  h_license="Άδεια",
  license_p="MIT. Τα εικονίδια εξακολουθούν να υπόκεινται στις άδειες του The Noun Project (CC BY ή κοινό κτήμα, συνδρομή κατά περίπτωση).",
  footer="Από τον <a href='https://damiencuvillier.com' target='_blank' rel='noopener'>Damien</a> · Issues και PRs ευπρόσδεκτα",
+ ai_notice="Ο κώδικας αυτού του workflow δημιουργήθηκε με τη βοήθεια ενός LLM (Claude Code) — σχεδιάστηκε και δοκιμάστηκε από άνθρωπο ;-)",
 )
 
 for code, _, _ in LANGS:
-    body = TEMPLATE.format(nav=nav(code), code=code, **T[code])
+    body = TEMPLATE.format(nav=nav(code), code=code, badges=BADGES, **T[code])
     with open(os.path.join(OUT, fname(code)), "w") as f:
         f.write(body)
     print("→ " + fname(code))

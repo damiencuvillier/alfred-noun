@@ -13,6 +13,9 @@
 //
 // Aucun identifiant ne transite par ce démon : la connexion se fait à la main
 // dans la fenêtre Chrome, le profil persistant garde les cookies.
+//
+// Le code de ce workflow a été généré avec l'aide d'un LLM (Claude Code) —
+// conçu et testé par un humain ;-)
 
 import fs from 'node:fs';
 import http from 'node:http';

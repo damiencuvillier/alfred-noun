@@ -68,7 +68,7 @@ Keine Zugangsdaten laufen durch den Workflow: Die Anmeldung erfolgt von Hand im 
 ## 🛠 Entwicklung
 
 ```bash
-(cd workflow && zip -r "../dist/The-Noun-Project.alfredworkflow" . -x '.*' -x '__pycache__/*')  # den Workflow verpacken
+./build                           # den Workflow verpacken
 osascript -l JavaScript tools/make-icon.js "$PWD/workflow/icon.png"  # workflow/icon.png neu erzeugen
 node tools/make-screenshots.mjs   # die Screenshots neu erzeugen
 tools/make-readmes.py             # alle README-Dateien neu erzeugen
@@ -78,6 +78,8 @@ tools/make-buttons.py             # die Download-Buttons neu erzeugen
 - `workflow/` – Quellen: `info.plist`, Python-Skripte (nur Stdlib), der Daemon `server.mjs`, `i18n.py` (9 Sprachen)
 - Der Daemon stellt eine kleine lokale HTTP-API (`/search`, `/download`, `/login`, `/status`, `/quit`) auf 127.0.0.1 bereit
 - `dist/` – das installierbare Paket
+
+[![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)](https://www.python.org) [![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev) [![Claude](https://img.shields.io/badge/Claude-D97757?logo=claude&logoColor=white)](https://claude.com)
 
 ## 📚 Referenzen
 
@@ -92,3 +94,5 @@ MIT. Die Icons selbst unterliegen weiterhin den Lizenzen von The Noun Project (C
 ---
 
 Erstellt von <a href='https://damiencuvillier.com' target='_blank' rel='noopener'>Damien</a> · Issues und PRs willkommen
+
+*Der Code dieses Workflows wurde mit Unterstützung eines LLM (Claude Code) generiert — entworfen und getestet von einem Menschen ;-)*

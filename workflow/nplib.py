@@ -4,6 +4,9 @@
 Signature OAuth 1.0a two-legged (HMAC-SHA1, consumer key/secret uniquement,
 sans access token), transmise via le header Authorization — seule méthode
 exemplifiée par la doc officielle. Stdlib Python 3.9 uniquement.
+
+Le code de ce workflow a été généré avec l'aide d'un LLM (Claude Code) —
+conçu et testé par un humain ;-)
 """
 
 import base64

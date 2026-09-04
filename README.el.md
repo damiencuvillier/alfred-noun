@@ -68,7 +68,7 @@ Backend (Περιηγητής ή επίσημο API), προεπιλεγμένη
 ## 🛠 Ανάπτυξη
 
 ```bash
-(cd workflow && zip -r "../dist/The-Noun-Project.alfredworkflow" . -x '.*' -x '__pycache__/*')  # πακετάρει το workflow
+./build                           # πακετάρει το workflow
 osascript -l JavaScript tools/make-icon.js "$PWD/workflow/icon.png"  # αναδημιουργεί το workflow/icon.png
 node tools/make-screenshots.mjs   # αναδημιουργεί τα στιγμιότυπα οθόνης
 tools/make-readmes.py             # αναδημιουργεί όλα τα README
@@ -78,6 +78,8 @@ tools/make-buttons.py             # αναδημιουργεί τα κουμπι
 - `workflow/` — οι πηγές: `info.plist`, scripts Python (μόνο stdlib), ο δαίμονας `server.mjs`, `i18n.py` (9 γλώσσες)
 - Ο δαίμονας εκθέτει ένα μικρό τοπικό HTTP API (`/search`, `/download`, `/login`, `/status`, `/quit`) στη 127.0.0.1
 - `dist/` — το εγκαταστάσιμο πακέτο
+
+[![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)](https://www.python.org) [![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev) [![Claude](https://img.shields.io/badge/Claude-D97757?logo=claude&logoColor=white)](https://claude.com)
 
 ## 📚 Αναφορές
 
@@ -92,3 +94,5 @@ MIT. Τα εικονίδια εξακολουθούν να υπόκεινται 
 ---
 
 Από τον <a href='https://damiencuvillier.com' target='_blank' rel='noopener'>Damien</a> · Issues και PRs ευπρόσδεκτα
+
+*Ο κώδικας αυτού του workflow δημιουργήθηκε με τη βοήθεια ενός LLM (Claude Code) — σχεδιάστηκε και δοκιμάστηκε από άνθρωπο ;-)*
