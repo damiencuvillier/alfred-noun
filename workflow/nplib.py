@@ -125,3 +125,50 @@ def cache_dir():
     )
     os.makedirs(path, exist_ok=True)
     return path
+
+
+def cache_days():
+    """Durée du cache disque (recherches, téléchargements), en jours —
+    réglable dans la configuration du workflow. 0 = désactivé."""
+    raw = (os.environ.get("np_cache_days") or "2").strip()
+    try:
+        days = int(raw)
+    except ValueError:
+        days = 2
+    return max(0, days)
+
+
+def cached(namespace, fingerprint_parts, fetch, binary=False):
+    """Cache disque générique, partagé par la recherche et le téléchargement.
+    `fetch` est rappelé (et son résultat mis en cache) si l'entrée est
+    absente, périmée ou illisible ; désactivé si cache_days() vaut 0."""
+    days = cache_days()
+    if days <= 0:
+        return fetch()
+    cache_root = os.path.join(cache_dir(), namespace)
+    os.makedirs(cache_root, exist_ok=True)
+    fingerprint = hashlib.sha1(
+        json.dumps(fingerprint_parts, sort_keys=True).encode()
+    ).hexdigest()
+    cache_file = os.path.join(cache_root, fingerprint)
+    try:
+        if time.time() - os.path.getmtime(cache_file) < days * 86400:
+            if binary:
+                with open(cache_file, "rb") as handle:
+                    return handle.read()
+            with open(cache_file, "r", encoding="utf-8") as handle:
+                return json.load(handle)
+    except (OSError, ValueError):
+        # Fichier absent, illisible ou tronqué (Alfred tue le run précédent
+        # pendant la frappe) : on repart de la source.
+        pass
+    data = fetch()
+    tmp_file = "%s.%d.tmp" % (cache_file, os.getpid())
+    if binary:
+        with open(tmp_file, "wb") as handle:
+            handle.write(data)
+    else:
+        with open(tmp_file, "w", encoding="utf-8") as handle:
+            json.dump(data, handle, ensure_ascii=False)
+    os.replace(tmp_file, cache_file)
+    return data

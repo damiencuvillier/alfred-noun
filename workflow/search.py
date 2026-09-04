@@ -9,12 +9,10 @@ Deux backends, choisis par la variable de configuration np_backend :
 """
 
 import concurrent.futures
-import hashlib
 import json
 import os
 import subprocess
 import sys
-import time
 import urllib.request
 
 import browser
@@ -22,7 +20,6 @@ import nplib
 from i18n import t
 
 THUMB_SIZE = 200          # valeurs acceptées par l'API : 42, 84, 200
-SEARCH_CACHE_TTL = 600    # secondes — économise le quota en re-navigation
 WORKFLOW_DIR = os.path.dirname(os.path.abspath(__file__))
 MARKER = "▸"              # préfixe de requête du sous-menu ⇥ d'une icône
 
@@ -342,26 +339,11 @@ def render(entries, prepend=None, cache_seconds=600):
 
 
 def cached_api_search(query, params, key, secret):
-    cache_root = os.path.join(nplib.cache_dir(), "searches")
-    os.makedirs(cache_root, exist_ok=True)
-    fingerprint = hashlib.sha1(
-        json.dumps([query, params], sort_keys=True).encode()
-    ).hexdigest()
-    cache_file = os.path.join(cache_root, fingerprint + ".json")
-    try:
-        if time.time() - os.path.getmtime(cache_file) < SEARCH_CACHE_TTL:
-            with open(cache_file, "r", encoding="utf-8") as handle:
-                return json.load(handle)
-    except (OSError, ValueError):
-        # Fichier absent, illisible ou tronqué (Alfred tue le run précédent
-        # pendant la frappe) : on repart de l'API.
-        pass
-    data = nplib.api_get("/v2/icon", dict(params, query=query), key, secret)
-    tmp_file = "%s.%d.tmp" % (cache_file, os.getpid())
-    with open(tmp_file, "w", encoding="utf-8") as handle:
-        json.dump(data, handle, ensure_ascii=False)
-    os.replace(tmp_file, cache_file)
-    return data
+    return nplib.cached(
+        "searches",
+        ["api", query, params],
+        lambda: nplib.api_get("/v2/icon", dict(params, query=query), key, secret),
+    )
 
 
 def api_entry(icon):
@@ -467,7 +449,11 @@ def run_browser(query, limit, png_size):
         return
 
     try:
-        data = browser.call("/search", {"q": query, "limit": limit}, timeout=40)
+        data = nplib.cached(
+            "searches",
+            ["browser", query, limit],
+            lambda: browser.call("/search", {"q": query, "limit": limit}, timeout=40),
+        )
     except browser.DaemonDown:
         alfred_output(
             [message_item(t("ui_starting_title"), t("ui_starting_sub"))],

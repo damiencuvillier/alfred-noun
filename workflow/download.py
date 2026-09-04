@@ -340,9 +340,29 @@ def color_param():
 
 
 def fetch_image(icon_id, fmt):
-    """Récupère le SVG/PNG (octets bruts) via le backend actif.
-    Imprime un message et sort en cas d'échec."""
+    """Récupère le SVG/PNG (octets bruts) via le backend actif, mis en cache
+    (durée réglable dans la configuration, voir nplib.cache_days) : le
+    contenu d'une icône ne change pas, inutile de resolliciter le site à
+    chaque save/copy répété."""
     backend = (os.environ.get("np_backend") or "browser").strip()
+    fingerprint = [
+        backend,
+        icon_id,
+        fmt,
+        png_size() if fmt == "png" else None,
+        color_param(),
+    ]
+    return nplib.cached(
+        "downloads",
+        fingerprint,
+        lambda: _fetch_image_uncached(icon_id, fmt, backend),
+        binary=True,
+    )
+
+
+def _fetch_image_uncached(icon_id, fmt, backend):
+    """Corps de fetch_image : appelé uniquement lors d'un cache miss.
+    Imprime un message et sort en cas d'échec."""
     if backend == "api":
         key, secret = nplib.get_credentials()
         if not key or not secret:
