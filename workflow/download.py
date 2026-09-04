@@ -21,11 +21,9 @@ import base64
 import binascii
 import os
 import re
-import struct
 import subprocess
 import sys
 import time
-import zlib
 
 import browser
 import nplib
@@ -75,6 +73,23 @@ def pbcopy(data):
     LANG et pbcopy interpréterait les octets UTF-8 en MacRoman (mojibake)."""
     env = dict(os.environ, LANG="en_US.UTF-8")
     return subprocess.run(["pbcopy"], input=data, env=env).returncode == 0
+
+
+def clip_dir():
+    """Sous-dossier de cache pour les fichiers posés sur le presse-papiers :
+    doit rester sur disque (une référence fichier, pas son contenu, y est
+    copiée), donc purgé plutôt que supprimé aussitôt comme un tmp classique."""
+    path = os.path.join(nplib.cache_dir(), "clip")
+    os.makedirs(path, exist_ok=True)
+    cutoff = time.time() - 86400
+    try:
+        for name in os.listdir(path):
+            candidate = os.path.join(path, name)
+            if os.path.isfile(candidate) and os.path.getmtime(candidate) < cutoff:
+                os.remove(candidate)
+    except OSError:
+        pass
+    return path
 
 
 def strip_enabled():
@@ -173,129 +188,35 @@ def strip_svg_attribution(blob):
     return cleaned.encode("utf-8")
 
 
-def _png_alpha_rows(blob):
-    """Décode un PNG 8 bits non entrelacé avec canal alpha (RGBA ou gris+alpha)
-    et retourne (fraction de pixels opaques par ligne, largeur, hauteur).
-    (None, w, h) si le format n'est pas géré — on ne rogne alors pas."""
-    if blob[:8] != b"\x89PNG\r\n\x1a\n":
-        return None, 0, 0
-    pos = 8
-    width = height = 0
-    bit_depth = color_type = interlace = None
-    idat = b""
-    while pos + 8 <= len(blob):
-        (length,) = struct.unpack(">I", blob[pos:pos + 4])
-        tag = blob[pos + 4:pos + 8]
-        data = blob[pos + 8:pos + 8 + length]
-        if tag == b"IHDR":
-            width, height, bit_depth, color_type, _, _, interlace = struct.unpack(
-                ">IIBBBBB", data
-            )
-        elif tag == b"IDAT":
-            idat += data
-        elif tag == b"IEND":
-            break
-        pos += 12 + length
-    if not width or bit_depth != 8 or interlace != 0 or color_type not in (4, 6):
-        return None, width, height
-    channels = 2 if color_type == 4 else 4
+def rasterize_svg(svg_bytes, size):
+    """Convertit un SVG (déjà nettoyé) en PNG via sips, à la taille cible.
+    Rendu vectoriel natif : remplace le recadrage par pixels du PNG brut du
+    site — plus fiable, la bande d'attribution n'existe simplement plus
+    dans la source plutôt que d'être devinée sur l'image finale."""
+    tmp_svg = os.path.join(nplib.cache_dir(), "raster-%d.svg" % os.getpid())
+    tmp_png = os.path.join(nplib.cache_dir(), "raster-%d.png" % os.getpid())
     try:
-        raw = zlib.decompress(idat)
-    except zlib.error:
-        return None, width, height
-    stride = width * channels
-    if len(raw) < height * (stride + 1):
-        return None, width, height
-    sample_step = max(1, width // 64)
-    fractions = []
-    prev = bytearray(stride)
-    offset = 0
-    for _ in range(height):
-        filter_type = raw[offset]
-        offset += 1
-        line = bytearray(raw[offset:offset + stride])
-        offset += stride
-        if filter_type == 1:
-            for i in range(channels, stride):
-                line[i] = (line[i] + line[i - channels]) & 0xFF
-        elif filter_type == 2:
-            for i in range(stride):
-                line[i] = (line[i] + prev[i]) & 0xFF
-        elif filter_type == 3:
-            for i in range(stride):
-                left = line[i - channels] if i >= channels else 0
-                line[i] = (line[i] + ((left + prev[i]) >> 1)) & 0xFF
-        elif filter_type == 4:
-            for i in range(stride):
-                left = line[i - channels] if i >= channels else 0
-                up = prev[i]
-                corner = prev[i - channels] if i >= channels else 0
-                p = left + up - corner
-                pa, pb, pc = abs(p - left), abs(p - up), abs(p - corner)
-                if pa <= pb and pa <= pc:
-                    pred = left
-                elif pb <= pc:
-                    pred = up
-                else:
-                    pred = corner
-                line[i] = (line[i] + pred) & 0xFF
-        prev = line
-        alphas = line[channels - 1::channels][::sample_step]
-        opaque = sum(1 for value in alphas if value > 15)
-        fractions.append(opaque / max(1, len(alphas)))
-    return fractions, width, height
-
-
-def _png_keep_height(blob):
-    """Hauteur à conserver pour retirer la bande d'attribution, 0 = ne pas
-    toucher. Deux motifs Noun Project :
-    - carré + bande (H ≈ 1,25 × L) : texte clairsemé ou bande vide en bas ;
-    - non carré (abonné) : bande basse transparente, H ≈ 1,25 × contenu.
-    Garde-fou : une bande dense (> 20 % opaque) est du vrai contenu."""
-    rows, width, height = _png_alpha_rows(blob)
-    if not rows:
-        return 0
-    if round(width * 1.18) <= height <= round(width * 1.32):
-        band = rows[width:]
-        if band and sum(band) / len(band) <= 0.2:
-            return width
-        return 0
-    y = height - 1
-    while y >= 0 and rows[y] == 0:
-        y -= 1
-    content = y + 1
-    if (
-        content
-        and height - content >= 0.1 * height
-        and abs(height - 1.25 * content) <= 0.04 * height
-    ):
-        return content
-    return 0
-
-
-def crop_png_file(path):
-    """Rogne la bande d'attribution d'un PNG (analyse Python, rognage
-    CoreGraphics via crop-image.js). Silencieux : un échec laisse le fichier
-    d'origine."""
-    if not strip_enabled():
-        return
-    try:
-        with open(path, "rb") as handle:
-            blob = handle.read()
-        keep = _png_keep_height(blob)
-    except Exception:
-        return
-    if not keep:
-        return
-    script = os.path.join(WORKFLOW_DIR, "crop-image.js")
-    try:
+        with open(tmp_svg, "wb") as handle:
+            handle.write(svg_bytes)
         subprocess.run(
-            ["/usr/bin/osascript", "-l", "JavaScript", script, path, str(keep)],
+            [
+                "/usr/bin/sips",
+                "-s", "format", "png",
+                "-Z", str(size),
+                tmp_svg,
+                "--out", tmp_png,
+            ],
             capture_output=True,
             timeout=30,
         )
-    except Exception:
-        pass
+        with open(tmp_png, "rb") as handle:
+            return handle.read()
+    finally:
+        for path in (tmp_svg, tmp_png):
+            try:
+                os.remove(path)
+            except OSError:
+                pass
 
 
 def resize_png_file(path, target):
@@ -325,6 +246,21 @@ def resize_png_file(path, target):
 
 def _applescript_string(value):
     return '"%s"' % value.replace("\\", "\\\\").replace('"', '\\"')
+
+
+def copy_file_to_clipboard(path):
+    """Place une référence fichier — pas son contenu — dans le presse-papiers :
+    coller ailleurs (Finder, Figma, Slack…) donne le fichier lui-même."""
+    result = subprocess.run(
+        [
+            "osascript",
+            "-e",
+            "set the clipboard to (POSIX file %s)" % _applescript_string(path),
+        ],
+        capture_output=True,
+        timeout=15,
+    )
+    return result.returncode == 0
 
 
 def pick_and_store_default_dir():
@@ -489,14 +425,30 @@ def save_bytes(blob, directory, stem, extension):
         sys.exit(1)
 
 
+def process_png_file(path):
+    """Ajuste le PNG à la taille cible (no-op si le nettoyage via SVG l'a
+    déjà rasterisé à la bonne taille) ; appelé identiquement par save et par
+    clip pour garantir un résultat identique entre les deux."""
+    resize_png_file(path, png_size())
+
+
+def copy_svg_blob(blob, stem):
+    """Écrit le SVG (nettoyé) dans le cache et place une référence fichier
+    dans le presse-papiers — coller ailleurs donne un vrai fichier .svg, pas
+    son code source."""
+    path = unique_path(clip_dir(), stem, "svg")
+    with open(path, "wb") as handle:
+        handle.write(blob)
+    return copy_file_to_clipboard(path)
+
+
 def copy_png_blob(blob, term):
     """Place l'image PNG (nettoyée/redimensionnée) dans le presse-papiers."""
     tmp = os.path.join(nplib.cache_dir(), "clip-%d.png" % os.getpid())
     try:
         with open(tmp, "wb") as handle:
             handle.write(blob)
-        crop_png_file(tmp)
-        resize_png_file(tmp, png_size())
+        process_png_file(tmp)
         result = subprocess.run(
             [
                 "osascript",
@@ -547,10 +499,21 @@ def execute_plan(plan, icon_id, term, attribution):
                 messages.append(t("saved", "TXT", os.path.basename(path)))
         else:
             if fmt not in image_cache:
-                blob = fetch_image(icon_id, fmt)
-                if fmt == "svg" and strip_enabled():
-                    blob = strip_svg_attribution(blob)
-                image_cache[fmt] = blob
+                if fmt == "png" and strip_enabled():
+                    # Repart du SVG (nettoyage fiable, structurel) plutôt que
+                    # de deviner la bande d'attribution sur les pixels du PNG.
+                    if "svg" not in image_cache:
+                        image_cache["svg"] = strip_svg_attribution(
+                            fetch_image(icon_id, "svg")
+                        )
+                    image_cache["png"] = rasterize_svg(
+                        image_cache["svg"], png_size()
+                    )
+                else:
+                    blob = fetch_image(icon_id, fmt)
+                    if fmt == "svg" and strip_enabled():
+                        blob = strip_svg_attribution(blob)
+                    image_cache[fmt] = blob
             blob = image_cache[fmt]
             if verb == "clip":
                 if fmt == "png":
@@ -560,7 +523,7 @@ def execute_plan(plan, icon_id, term, attribution):
                         print(t("copy_failed"))
                         sys.exit(1)
                 else:
-                    if pbcopy(blob):
+                    if copy_svg_blob(blob, stem_base):
                         messages.append(t("svg_copied", term))
                     else:
                         print(t("copy_failed"))
@@ -570,8 +533,7 @@ def execute_plan(plan, icon_id, term, attribution):
                     directory = target_directory()
                 path = save_bytes(blob, directory, stem_base, fmt)
                 if fmt == "png":
-                    crop_png_file(path)
-                    resize_png_file(path, png_size())
+                    process_png_file(path)
                 saved_paths.append(path)
                 messages.append(t("saved", fmt.upper(), os.path.basename(path)))
 
